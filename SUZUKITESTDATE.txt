@@ -1,0 +1,693 @@
+
+/* Drop Tables */
+
+DROP TABLE comment_inf CASCADE CONSTRAINTS;
+DROP TABLE favorite CASCADE CONSTRAINTS;
+DROP TABLE picture CASCADE CONSTRAINTS;
+DROP TABLE spotinf CASCADE CONSTRAINTS;
+DROP TABLE spot CASCADE CONSTRAINTS;
+DROP TABLE category CASCADE CONSTRAINTS;
+DROP TABLE reservation CASCADE CONSTRAINTS;
+DROP TABLE flight_inf CASCADE CONSTRAINTS;
+DROP TABLE city CASCADE CONSTRAINTS;
+DROP TABLE itinerary CASCADE CONSTRAINTS;
+DROP TABLE country CASCADE CONSTRAINTS;
+DROP TABLE members CASCADE CONSTRAINTS;
+DROP TABLE optional_tour CASCADE CONSTRAINTS;
+DROP TABLE product CASCADE CONSTRAINTS;
+DROP TABLE latlon CASCADE CONSTRAINTS;
+
+
+
+/* Create Tables */
+
+CREATE TABLE category
+(
+	category_id number(2) NOT NULL,
+	category_name nvarchar2(100),
+	PRIMARY KEY (category_id)
+);
+
+
+CREATE TABLE city
+(
+	city_id number(5) NOT NULL,
+	city_name nvarchar2(100),
+	country_id number(3) NOT NULL,
+	country_name nvarchar2(100),
+	PRIMARY KEY (city_id)
+);
+
+
+CREATE TABLE comment_inf
+(
+	comment_id nvarchar2(100) NOT NULL,
+	comment_content nvarchar2(1000),
+	comment_time timestamp,
+	-- メアド
+	member_id nvarchar2(100) NOT NULL,
+	spot_id nvarchar2(100),
+	-- 1-5点とする
+	grade number NOT NULL,
+	itinerary_id nvarchar2(100),
+	product_id nvarchar2(100),
+	PRIMARY KEY (comment_id)
+);
+
+
+CREATE TABLE country
+(
+	country_id number(3) NOT NULL,
+	country_name nvarchar2(100),
+	PRIMARY KEY (country_id)
+);
+
+
+CREATE TABLE favorite
+(
+	favorite_id nvarchar2(100) NOT NULL,
+	itinerary_id nvarchar2(100),
+	spot_id nvarchar2(100),
+	product_id nvarchar2(100),
+	-- メアド
+	member_id nvarchar2(100) NOT NULL,
+	PRIMARY KEY (favorite_id)
+);
+
+
+CREATE TABLE flight_inf
+(
+	flight_id nvarchar2(100) NOT NULL,
+	arrival_time timestamp,
+	departure_time timestamp,
+	departure_city_id number(5),
+	arrival_city_id number(5),
+	departure_city_name nvarchar2(100),
+	arrival_city_name nvarchar2(100),
+	airport_tax number(10),
+	currency_unit nvarchar2(10),
+	PRIMARY KEY (flight_id)
+);
+
+
+CREATE TABLE itinerary
+(
+	itinerary_id nvarchar2(100) NOT NULL,
+	-- メアド
+	member_id nvarchar2(100) NOT NULL,
+	itinerary_name nvarchar2(100),
+	create_time timestamp,
+	itinerary_overview nvarchar2(1000),
+	country_id number(3),
+	country_name nvarchar2(100),
+	PRIMARY KEY (itinerary_id)
+);
+
+
+CREATE TABLE members
+(
+	-- メアド
+	member_id nvarchar2(100) NOT NULL,
+	member_name nvarchar2(100),
+	member_point number(10) DEFAULT 0,
+	member_password nvarchar2(100) NOT NULL,
+	member_address nvarchar2(1000),
+	member_postcode nvarchar2(7),
+	member_phone nvarchar2(20),
+	creditcard_month nvarchar2(2),
+	creditcard_year nvarchar2(4),
+	creditcard_name nvarchar2(100),
+	creditcard_number nvarchar2(16),
+	creditcard_code nvarchar2(3),
+	passport_name nvarchar2(100),
+	passport_number nvarchar2(50),
+	PRIMARY KEY (member_id)
+);
+
+
+CREATE TABLE optional_tour
+(
+	tour_id nvarchar2(100) NOT NULL,
+	tour_name nvarchar2(100),
+	tour_content nvarchar2(1000),
+	tour_price number(10),
+	PRIMARY KEY (tour_id)
+);
+
+
+CREATE TABLE picture
+(
+	picture_id nvarchar2(100) NOT NULL,
+	picture_name nvarchar2(100),
+	picture_link nvarchar2(1000),
+	spot_id nvarchar2(100),
+	product_id nvarchar2(100),
+	tour_id nvarchar2(100),
+	itinerary_id nvarchar2(100),
+	PRIMARY KEY (picture_id)
+);
+
+
+CREATE TABLE product
+(
+	product_id nvarchar2(100) NOT NULL,
+	product_name nvarchar2(100) NOT NULL,
+	product_content nvarchar2(1000),
+	product_price number(10) NOT NULL,
+	airport_tax number(10),
+	currency_unit nvarchar2(10),
+	exchange_rate number(8,3),
+	minimum_number number(5),
+	stock_quantity number(5),
+	remarks nvarchar2(1000),
+	update_time timestamp,
+	departure_time timestamp,
+	arrival_time timestamp,
+	PRIMARY KEY (product_id)
+);
+
+
+CREATE TABLE reservation
+(
+	reservation_id nvarchar2(100) NOT NULL,
+	product_id nvarchar2(100),
+	-- メアド
+	member_id nvarchar2(100) NOT NULL,
+	reservation_time timestamp,
+	reservation_number number(5),
+	departure_day date,
+	total_amount number(10),
+	-- 1:クレジット
+	-- 2:銀行振込
+	payment_method number,
+	creditcard_number nvarchar2(16),
+	expiry_date nvarchar2(4),
+	product_price number(10),
+	airport_tax number(10),
+	currency_unit nvarchar2(10),
+	exchange_rate number(8,3),
+	itinerary_id nvarchar2(100),
+	departure_flight_id nvarchar2(100),
+	arrival_flight_id nvarchar2(100),
+	PRIMARY KEY (reservation_id)
+);
+
+
+CREATE TABLE spot
+(
+	spot_id nvarchar2(100) NOT NULL,
+	spot_name nvarchar2(100) NOT NULL,
+	-- メアド
+	member_id nvarchar2(100),
+	city_id number(5),
+	tour1_id nvarchar2(100),
+	tour2_id nvarchar2(100),
+	tour3_id nvarchar2(100),
+	spot_content nvarchar2(1000),
+	category1_id number(2),
+	category2_id number(2),
+	category3_id number(2),
+	category4_id number(2),
+	category5_id number(2),
+	category6_id number(2),
+	country_name nvarchar2(100),
+	latlon_id number(5),
+	PRIMARY KEY (spot_id)
+);
+
+
+CREATE TABLE spotinf
+(
+	spot_infid nvarchar2(100) NOT NULL,
+	-- 1-9
+	daynumber number NOT NULL,
+	itinerary_id nvarchar2(100) NOT NULL,
+	-- 朝1　午後2　夜3
+	timestate number NOT NULL,
+	-- 1-3
+	sequenceinf number NOT NULL,
+	spot_id nvarchar2(100),
+	tour_content nvarchar2(1000),
+	tour_name nvarchar2(100),
+	tour_price number(10),
+	PRIMARY KEY (spot_infid)
+);
+
+CREATE TABLE latlon
+(
+	latlon_id number(5) NOT NULL,
+	latlon_value nvarchar2(100),
+	PRIMARY KEY (latlon_id)
+);
+
+
+/* Create Foreign Keys */
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (category6_id)
+	REFERENCES category (category_id)
+;
+
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (category5_id)
+	REFERENCES category (category_id)
+;
+
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (category1_id)
+	REFERENCES category (category_id)
+;
+
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (category4_id)
+	REFERENCES category (category_id)
+;
+
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (category3_id)
+	REFERENCES category (category_id)
+;
+
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (category2_id)
+	REFERENCES category (category_id)
+;
+
+
+ALTER TABLE flight_inf
+	ADD FOREIGN KEY (departure_city_id)
+	REFERENCES city (city_id)
+;
+
+
+ALTER TABLE flight_inf
+	ADD FOREIGN KEY (arrival_city_id)
+	REFERENCES city (city_id)
+;
+
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (city_id)
+	REFERENCES city (city_id)
+;
+
+
+ALTER TABLE city
+	ADD FOREIGN KEY (country_id)
+	REFERENCES country (country_id)
+;
+
+
+ALTER TABLE itinerary
+	ADD FOREIGN KEY (country_id)
+	REFERENCES country (country_id)
+;
+
+
+ALTER TABLE reservation
+	ADD FOREIGN KEY (departure_flight_id)
+	REFERENCES flight_inf (flight_id)
+;
+
+
+ALTER TABLE reservation
+	ADD FOREIGN KEY (arrival_flight_id)
+	REFERENCES flight_inf (flight_id)
+;
+
+
+ALTER TABLE comment_inf
+	ADD FOREIGN KEY (itinerary_id)
+	REFERENCES itinerary (itinerary_id)
+;
+
+
+ALTER TABLE favorite
+	ADD FOREIGN KEY (itinerary_id)
+	REFERENCES itinerary (itinerary_id)
+;
+
+
+ALTER TABLE picture
+	ADD FOREIGN KEY (itinerary_id)
+	REFERENCES itinerary (itinerary_id)
+;
+
+
+ALTER TABLE reservation
+	ADD FOREIGN KEY (itinerary_id)
+	REFERENCES itinerary (itinerary_id)
+;
+
+
+ALTER TABLE spotinf
+	ADD FOREIGN KEY (itinerary_id)
+	REFERENCES itinerary (itinerary_id)
+;
+
+
+ALTER TABLE comment_inf
+	ADD FOREIGN KEY (member_id)
+	REFERENCES members (member_id)
+;
+
+
+ALTER TABLE favorite
+	ADD FOREIGN KEY (member_id)
+	REFERENCES members (member_id)
+;
+
+
+ALTER TABLE itinerary
+	ADD FOREIGN KEY (member_id)
+	REFERENCES members (member_id)
+;
+
+
+ALTER TABLE reservation
+	ADD FOREIGN KEY (member_id)
+	REFERENCES members (member_id)
+;
+
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (member_id)
+	REFERENCES members (member_id)
+;
+
+
+ALTER TABLE picture
+	ADD FOREIGN KEY (tour_id)
+	REFERENCES optional_tour (tour_id)
+;
+
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (tour2_id)
+	REFERENCES optional_tour (tour_id)
+;
+
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (tour1_id)
+	REFERENCES optional_tour (tour_id)
+;
+
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (tour3_id)
+	REFERENCES optional_tour (tour_id)
+;
+
+
+ALTER TABLE comment_inf
+	ADD FOREIGN KEY (product_id)
+	REFERENCES product (product_id)
+;
+
+
+ALTER TABLE favorite
+	ADD FOREIGN KEY (product_id)
+	REFERENCES product (product_id)
+;
+
+
+ALTER TABLE picture
+	ADD FOREIGN KEY (product_id)
+	REFERENCES product (product_id)
+;
+
+
+ALTER TABLE reservation
+	ADD FOREIGN KEY (product_id)
+	REFERENCES product (product_id)
+;
+
+
+ALTER TABLE comment_inf
+	ADD FOREIGN KEY (spot_id)
+	REFERENCES spot (spot_id)
+;
+
+
+ALTER TABLE favorite
+	ADD FOREIGN KEY (spot_id)
+	REFERENCES spot (spot_id)
+;
+
+
+ALTER TABLE picture
+	ADD FOREIGN KEY (spot_id)
+	REFERENCES spot (spot_id)
+;
+
+
+ALTER TABLE spotinf
+	ADD FOREIGN KEY (spot_id)
+	REFERENCES spot (spot_id)
+;
+
+ALTER TABLE spot
+	ADD FOREIGN KEY (latlon_id)
+	REFERENCES latlon (latlon_id)
+;
+
+/* Comments */
+
+COMMENT ON COLUMN comment_inf.member_id IS 'メアド';
+COMMENT ON COLUMN comment_inf.grade IS '1-5点とする';
+COMMENT ON COLUMN favorite.member_id IS 'メアド';
+COMMENT ON COLUMN itinerary.member_id IS 'メアド';
+COMMENT ON COLUMN members.member_id IS 'メアド';
+COMMENT ON COLUMN reservation.member_id IS 'メアド';
+COMMENT ON COLUMN reservation.payment_method IS '1:クレジット
+2:銀行振込';
+COMMENT ON COLUMN spot.member_id IS 'メアド';
+COMMENT ON COLUMN spotinf.daynumber IS '1-9';
+COMMENT ON COLUMN spotinf.timestate IS '朝1　午後2　夜3';
+COMMENT ON COLUMN spotinf.sequenceinf IS '1-3';
+
+
+
+
+
+
+
+
+
+INSERT INTO category (category_id, category_name) VALUES ('1', 'オプショナルツアー付き');
+INSERT INTO category (category_id, category_name) VALUES ('2', 'ユーザー作成');
+INSERT INTO category (category_id, category_name) VALUES ('3', '文化');
+INSERT INTO category (category_id, category_name) VALUES ('4', 'グルメ');
+INSERT INTO category (category_id, category_name) VALUES ('5', '風景');
+INSERT INTO category (category_id, category_name) VALUES ('6', '遺産');
+INSERT INTO category (category_id, category_name) VALUES ('7', '冒険');
+INSERT INTO category (category_id, category_name) VALUES ('8', '秘境');
+INSERT INTO category (category_id, category_name) VALUES ('9', '自然');
+
+
+INSERT INTO country (country_id, country_name) VALUES ('1', '日本');
+INSERT INTO country (country_id, country_name) VALUES ('2', 'インド');
+INSERT INTO country (country_id, country_name) VALUES ('3', 'アメリカ');
+INSERT INTO country (country_id, country_name) VALUES ('4', 'カザフスタン');
+
+
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('1', '東京', '1', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('2', '大阪', '1', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('3', 'デリー', '2', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('4', 'ニューデリー', '2', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('5', 'ムンバイ', '2', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('6', 'コルカタ', '2', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('7', 'チェンナイ', '2', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('8', 'アーグラ', '2', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('9', 'ニューヨーク', '3', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('10', 'サンフランシスコ', '3', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('11', 'ロサンゼルス', '3', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('12', 'シカゴ', '3', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('13', 'ボストン', '3', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('14', 'シアトル', '3', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('15', 'マイアミ', '3', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('16', 'アスタナ', '4', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('17', 'アルマトイ', '4', '');
+INSERT INTO city (city_id, city_name, country_id, country_name) VALUES ('18', 'バイコヌール', '4', '');
+
+
+INSERT INTO members (member_id, member_name, member_point, member_password, member_address, member_postcode, member_phone, creditcard_month, creditcard_year, creditcard_name, creditcard_number, creditcard_code, passport_name, passport_number) VALUES ('1', '加藤', '0', '1', '東京都中央区京橋1-7-1', '1048388', '08000010001', '12', '18', 'KATO', '3777000000000001', '001', 'KATO', 'AB0000001');
+INSERT INTO members (member_id, member_name, member_point, member_password, member_address, member_postcode, member_phone, creditcard_month, creditcard_year, creditcard_name, creditcard_number, creditcard_code, passport_name, passport_number) VALUES ('2', '片倉', '70', '2', '東京都中央区京橋1-7-1', '1048388', '08000010002', '12', '19', 'KATAKURA', '3777000000000002', '002', 'KATAKURA', 'AB0000002');
+INSERT INTO members (member_id, member_name, member_point, member_password, member_address, member_postcode, member_phone, creditcard_month, creditcard_year, creditcard_name, creditcard_number, creditcard_code, passport_name, passport_number) VALUES ('3', '倉田', '0', '3', '東京都中央区京橋1-7-1', '1048388', '08000010003', '12', '20', 'KURATA', '3777000000000003', '003', 'KURATA', 'AB0000003');
+INSERT INTO members (member_id, member_name, member_point, member_password, member_address, member_postcode, member_phone, creditcard_month, creditcard_year, creditcard_name, creditcard_number, creditcard_code, passport_name, passport_number) VALUES ('4', '鈴木', '0', '4', '東京都中央区京橋1-7-1', '1048388', '08000010004', '12', '21', 'SUZUKI', '3777000000000004', '004', 'SUZUKI', 'AB0000004');
+INSERT INTO members (member_id, member_name, member_point, member_password, member_address, member_postcode, member_phone, creditcard_month, creditcard_year, creditcard_name, creditcard_number, creditcard_code, passport_name, passport_number) VALUES ('5', '松村', '0', '5', '東京都中央区京橋1-7-1', '1048388', '08000010005', '12', '22', 'MATSUMURA', '3777000000000005', '005', 'MATSUMURA', 'AB0000005');
+INSERT INTO members (member_id, member_name, member_point, member_password, member_address, member_postcode, member_phone, creditcard_month, creditcard_year, creditcard_name, creditcard_number, creditcard_code, passport_name, passport_number) VALUES ('6', '叶', '0', '6', '東京都中央区京橋1-7-1', '1048388', '08000010006', '12', '23', 'YO', '3777000000000006', '006', 'YO', 'AB0000006');
+INSERT INTO members (member_id, member_name, member_point, member_password, member_address, member_postcode, member_phone, creditcard_month, creditcard_year, creditcard_name, creditcard_number, creditcard_code, passport_name, passport_number) VALUES ('7', '和泉', '250', '7', '東京都中央区京橋1-7-1', '1048388', '08000010007', '12', '24', 'IZUMI', '3777000000000007', '007', 'IZUMI', 'AB0000007');
+INSERT INTO members (member_id, member_name, member_point, member_password, member_address, member_postcode, member_phone, creditcard_month, creditcard_year, creditcard_name, creditcard_number, creditcard_code, passport_name, passport_number) VALUES ('8', '柴田', '350', '8', '東京都中央区京橋1-7-1', '1048388', '08000010008', '12', '25', 'SHIBATA', '3777000000000008', '008', 'SHIBATA', 'AB0000008');
+INSERT INTO members (member_id, member_name, member_point, member_password, member_address, member_postcode, member_phone, creditcard_month, creditcard_year, creditcard_name, creditcard_number, creditcard_code, passport_name, passport_number) VALUES ('9', '南舘', '240', '9', '東京都中央区京橋1-7-1', '1048388', '08000010009', '12', '26', 'MINAMIDATE', '3777000000000009', '009', 'MINAMIDATE', 'AB0000009');
+INSERT INTO members (member_id, member_name, member_point, member_password, member_address, member_postcode, member_phone, creditcard_month, creditcard_year, creditcard_name, creditcard_number, creditcard_code, passport_name, passport_number) VALUES ('10', '福嶋', '100', '10', '東京都中央区京橋1-7-2', '1048388', '08000010010', '12', '27', 'FUKUSHIMA', '3777000000000010', '010', 'FUKUSHIMA', 'AB0000010');
+
+INSERT INTO optional_tour (tour_id, tour_name, tour_content, tour_price) VALUES ('2', 'インドでエンジョイ3時間ツアー', '短時間でインドをあまりなく感じることができます', '4000');
+INSERT INTO optional_tour (tour_id, tour_name, tour_content, tour_price) VALUES ('3', 'デリードキドキ3時間', '楽しいよ', '4000');
+INSERT INTO optional_tour (tour_id, tour_name, tour_content, tour_price) VALUES ('4', 'デリードキドキ5時間', '楽しいよ', '5000');
+INSERT INTO optional_tour (tour_id, tour_name, tour_content, tour_price) VALUES ('5', 'デリードキドキ8時間', '楽しいよ', '7000');
+INSERT INTO optional_tour (tour_id, tour_name, tour_content, tour_price) VALUES ('6', 'タージ・マハル周遊8時間', 'あのタージ・マハルに行く!!', '8000');
+INSERT INTO optional_tour (tour_id, tour_name, tour_content, tour_price) VALUES ('7', 'タージ・マハル周遊12時間', 'あのタージ・マハルに行く!!', '11000');
+INSERT INTO optional_tour (tour_id, tour_name, tour_content, tour_price) VALUES ('8', '自由の女神に入ろう', 'ガイド付き!', '3000');
+
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('5','35.7111406,139.796351');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('2','35.6782786,139.771436');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('6','35.3564061,136.148348');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('7','27.174167,78.042222');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('1','35.7100443,139.810717');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('9','13.082190,80.275307');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('10','28.607523,77.194118');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('3','35.6815640,139.767199');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('4','35.7100574,139.810706');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('8','22.5667027,88.3676962');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('11','19.069731,72.892822');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('12','25.609963,85.235829');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('13','30.636415,78.690729');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('14','31.885015,78.734852');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('15','28.681526,77.198412');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('16','27.179581,78.021101');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('17','27.988613,86.924889');
+INSERT INTO LATLON ( LATLON_ID, LATLON_VALUE ) VALUES ('18','28.524513,77.185424');
+
+
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('7','タージ・マハル','',3,'6','7','','歴史感じる荘厳な建物',1,3,4,5,6,'','インド',7);
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('8','500年続くカレー屋さん','3',6,'','','','本格的カレーが味わえる。小汚いけど味はたしか！',2,3,4,'','','','インド',8);
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('9','香辛料ショップ','5',7,'','','','1000を超えるスパイスが揃い、試食もできる',2,3,4,'','','','インド',9);
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('10','蛇屋さん','6',4,'3','','','蛇を首に巻いたり、蛇のショーが見れるよ！',1,3,9,'','','','インド',10);
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('11','サリー体験ショップ','2',5,'','','','インドの伝統衣装であるサリーをお手頃価格で体験できます',2,3,'','','','','インド',11);
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('12','ガンジス川','5',5,'','','','有名な川です。臭いです。',2,3,5,9,'','','インド',12);
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('13','仙人の谷','',7,'3','','','古来より仙人が住むといわれる谷をクルーズできる',1,5,6,7,8,9,'インド',13);
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('14','神々が宿る山','3',8,'5','','','神々が宿る山に山登り！',1,4,5,7,8,9,'インド',14);
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('15','ヨガ体験教室','7',3,'','','','やさしくて日本語ぺらぺらの先生が初心者にもやさしく教えてくれます。',2,3,'','','','','インド',15);
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('16','アーグラ要塞','',5,'3','4','','圧倒的存在感の歴史的建造物！',1,3,5,6,'','','インド',16);
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('17','ヒマラヤ山脈','',8,'','','','ヒマラヤ山脈の自然を感じれます',5,7,8,9,'','','インド',17);
+INSERT INTO SPOT ( SPOT_ID, SPOT_NAME, MEMBER_ID, CITY_ID, TOUR1_ID, TOUR2_ID, TOUR3_ID, SPOT_CONTENT, CATEGORY1_ID, CATEGORY2_ID, CATEGORY3_ID, CATEGORY4_ID, CATEGORY5_ID, CATEGORY6_ID, COUNTRY_NAME, LATLON_ID ) VALUES ('18','クトゥブミナール','2',5,'3','','','塔！圧倒的塔！！！やったぜ！！！！！！',2,3,4,6,'','','インド',18);
+
+
+INSERT INTO itinerary (itinerary_id, member_id, itinerary_name, create_time, itinerary_overview, country_id, country_name) VALUES ('2', '2', 'インド周遊記', '2018-08-02 00:00:00.000', '', '2', 'インド');
+INSERT INTO itinerary (itinerary_id, member_id, itinerary_name, create_time, itinerary_overview, country_id, country_name) VALUES ('3', '3', 'わーいわい', '2018-08-03 00:00:00.000', '', '3', 'アメリカ');
+INSERT INTO itinerary (itinerary_id, member_id, itinerary_name, create_time, itinerary_overview, country_id, country_name) VALUES ('4', '4', 'あはははは', '2018-08-04 00:00:00.000', '', '4', 'カザフスタン');
+INSERT INTO itinerary (itinerary_id, member_id, itinerary_name, create_time, itinerary_overview, country_id, country_name) VALUES ('5', '7', 'インド周遊記', '2018-08-04 00:00:00.000', '', '2', 'インド');
+INSERT INTO itinerary (itinerary_id, member_id, itinerary_name, create_time, itinerary_overview, country_id, country_name) VALUES ('6', '7', 'ガンジス河なう', '2018-08-05 00:00:00.000', '', '2', 'インド');
+INSERT INTO itinerary (itinerary_id, member_id, itinerary_name, create_time, itinerary_overview, country_id, country_name) VALUES ('7', '8', 'タージマハルなんだよこれ', '2018-08-06 00:00:00.000', '', '2', 'インド');
+INSERT INTO itinerary (itinerary_id, member_id, itinerary_name, create_time, itinerary_overview, country_id, country_name) VALUES ('8', '8', '東京タワーです', '2018-08-07 00:00:00.000', '', '1', '日本');
+INSERT INTO itinerary (itinerary_id, member_id, itinerary_name, create_time, itinerary_overview, country_id, country_name) VALUES ('9', '9', 'ハワイでーす', '2018-08-08 00:00:00.000', '', '3', 'アメリカ');
+INSERT INTO itinerary (itinerary_id, member_id, itinerary_name, create_time, itinerary_overview, country_id, country_name) VALUES ('10', '9', 'インドとかなんもねーじゃん', '2018-08-09 00:00:00.000', '', '2', 'インド');
+
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES ('1', '東京体験三日間', '', '10000', '', '', '', '', '', '', '', '', '');
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES ('2', 'インド文化五日間体験', '', '200000', '', '', '', '', '', '', '', '', '');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(3,'グランドキャニオン国立公園に泊まるツアー','刻々と朝日/夕日に染められ、色を変える峡谷の姿を鑑賞！グランドキャニオンに太陽の光が射す様は、実はその瞬間だけを見るよりも、その前後30分間に移り変わる岩壁の色の変化が美しいといわれています。グランドキャニオン国立公園内に宿泊するからこそ出合える至高の風景です。','279900','18','ドル','111','10',8,'アメリカ','2018-07-24 00:00:00.000','2018-08-01 00:00:00.000','2018-08-05 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(4,'アメリカテーマパーク観光！ディズニーランド・リゾート5日間','ディズニーランド・リゾートで2日間2つのテーマパークが遊び放題！『2デー・パークホッパー・ボーナス・チケット』付！往復らくらく直行便で行ける！','229800','18','ドル','111','15',7,'アメリカ','2018-07-23 00:00:00.000','2018-08-02 00:00:00.000','2018-08-06 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(5,'羽田発 野球を楽しむ！アナハイム','今話題のチームの弾丸観戦ツアーへ！お席は3種類から選択可能！間近でアメリカ野球を楽しみたい方におすすめ！迫力のバックネット裏席もご用意','256900','18','ドル','111','12','10','アメリカ','2018-07-23 00:00:00.000','2018-08-01 00:00:00.000','2018-08-06 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(6,'7つの世界遺産を巡る インド ゴールデントライアングル満喫','満月の日の前後2日間（合計5日間）のみ入場を許される、夜間のタージ・マハール見学プランをご用意しています。月明りに照らされた幻想的な光景をお楽しみください！','163000','1550','インドルピー','1.579','13',8,'インド','2018-07-18 00:00:00.000','2018-08-02 00:00:00.000','2018-08-08 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(7,'タージ・マハールとインド料理、ヨガとアーユルヴェーダを楽しむ!女子旅インド','インド人の家庭を訪問し、一緒にバザールにて食材の買い物をした後、家庭の味インドカレーを作ります。昼食後、チャイを飲みながらサリーの試着などインド文化を体験します！','194000','1550','インドルピー','1.579','20',5,'インド','2018-07-16 00:00:00.000','2018-08-05 00:00:00.000','2018-08-09 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(16,'釈尊成道の地と母なるガンジスへ(ブッダガヤ・ヴァラナシ・アグラ)～祈りの聖地を巡る旅～','マハーボディー寺院（大菩提寺／入場）、悟りを開く前のブッダが沐浴をしたとされる尼蓮禅河（下車）、ブッダが乳粥供養を受けた地スジャータ村（下車）を見学します','269000','1550','インドルピー','1.579','10',3,'インド','2018-07-17 00:00:00.000','2018-08-01 00:00:00.000','2018-08-08 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(17,'インドのモダン芸術と近代史に迫る!近代建築の都チャンディーガルと山岳鉄道の旅','ル・コルビュジエ設計のチャンディーガル美術館（入場）、廃材アートで造られた不思議なテーマパークのネックチャンドロックガーデン（入場）を訪れます','299000','1550','インドルピー','1.579','15',9,'インド','2018-07-21 00:00:00.000','2018-08-02 00:00:00.000','2018-08-08 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(18,'人間に最も近い類人猿ボノボとの出会い・・・アフリカらしいアフリカ！2つのコンゴの旅','ボノボ保護区（ロラ・ヤ・ボノボ）と工芸美術館観光!かつてピグミ-チンパンジ-とよばれていたボノボ。争いを好まず愛と平和を好むボノボとのふれあいは、きっと忘れられない旅になるはずです。','503800','500','コンゴ・フラン ','0.069 ','10',8,'コンゴ','2018-07-21 00:00:00.000','2018-08-08 00:00:00.000','2018-08-13 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(19,'悠久のコンゴ川とボノボの保護区を観光','7日間の手ごろな日程で秘境の国へ…コンゴ河の南と北、2つのコンゴを旅する！ボノボ（ピグミ-チンパンジ-）の保護区も見学','518500','500','コンゴ・フラン ','0.069 ','12',7,'コンゴ','2018-07-24 00:00:00.000','2018-08-08 00:00:00.000','2018-08-14 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(20,'イタリアが誇る人気都市を行く！イタリア周遊','8日間でイタリアの人気4都市を巡ります。バチカン美術館にてミケランジェロの大作「最後の審判」を鑑賞！','239900','17.61','ユーロ','130.03','18',6,'イタリア','2018-07-24 00:00:00.000','2018-08-17 00:00:00.000','2018-08-24 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(21,'魅力たっぷり世界遺産を訪れる～見どころ満喫！南イタリア～','ローマと南イタリアの見どころをしっかりとご案内。代表的な世界遺産も訪れます。','239800','17.61','ユーロ','130.03','20',5,'イタリア','2018-07-24 00:00:00.000','2018-08-17 00:00:00.000','2018-08-24 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(22,'飛行機で行くセブンスターズホテル＆リゾーツホテル 東京3日間','あのセブンスターズホテル＆リゾーツに泊まる！品格と洗練の国際級アーバンリゾートホテル。平日・休日セミダブル利用で10階以上のスカイツリー側のお部屋をご用意!','48800','400','円','1',5,9,'日本','2018-07-24 00:00:00.000','2018-08-17 00:00:00.000','2018-08-19 00:00:00.000');
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES(53,'浅草2日間の旅','浅草寺・雷門など人気の浅草エリアの観光スポットへ','53800','400','円','1','15','10','日本','2018-07-24 00:00:00.000','2018-08-15 00:00:00.000','2018-08-16 00:00:00.000');
+
+
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES ('8', 'インド食事五日間体験', 'おいしいカレーが食べられます', '263000','1550','インドルピー','1.579','13',5,'インド','2018-07-18 00:00:00.000','2018-08-04 00:00:00.000','2018-08-08 00:00:00.000');
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES ('9', 'インド文化五日間体験', 'すてきな文化を知れます','253000','1550','インドルピー','1.579','12',4,'インド','2018-07-18 00:00:00.000','2018-08-02 00:00:00.000','2018-08-06 00:00:00.000');
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES ('10', 'インドヨガ五日間体験', 'かっこよくヨガができます', '243000','1550','インドルピー','1.579','11',3,'インド','2018-07-18 00:00:00.000','2018-08-02 00:00:00.000','2018-08-06 00:00:00.000');
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES ('11', 'アメリカ食事五日間体験', '大きな食べ物が食べられます', '256900','18','ドル','111','12','10','アメリカ','2018-07-23 00:00:00.000','2018-08-01 00:00:00.000','2018-08-05 00:00:00.000');
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES ('12', 'アメリカ文化五日間体験', 'ファンキーな文化を知れます', '286900','18','ドル','111','12','10','アメリカ','2018-07-23 00:00:00.000','2018-08-01 00:00:00.000','2018-08-05 00:00:00.000');
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES ('13', 'コンゴ文化五日間体験', '自然いっぱいの文化を知れます', '50100','500','コンゴ・フラン ','0.069 ','12',7,'コンゴ','2018-07-24 00:00:00.000','2018-08-10 00:00:00.000','2018-08-14 00:00:00.000');
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES ('14', 'コンゴ食事五日間体験', '安く食べられます', '48100','500','コンゴ・フラン ','0.069 ','12',7,'コンゴ','2018-07-24 00:00:00.000','2018-08-10 00:00:00.000','2018-08-14 00:00:00.000');
+INSERT INTO product (product_id, product_name, product_content, product_price, airport_tax, currency_unit, exchange_rate, minimum_number, stock_quantity, remarks, update_time, departure_time, arrival_time) VALUES ('15', '日本文化五日間体験', '趣深いです','13800','400','円','1','15','10','日本','2018-07-24 00:00:00.000','2018-08-15 00:00:00.000','2018-08-19 00:00:00.000');
+
+
+INSERT INTO reservation (reservation_id, product_id, member_id, reservation_time, reservation_number, departure_day, total_amount, payment_method, creditcard_number, expiry_date, product_price, airport_tax, currency_unit, exchange_rate, itinerary_id, departure_flight_id, arrival_flight_id) VALUES ('1', '8', '1', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO reservation (reservation_id, product_id, member_id, reservation_time, reservation_number, departure_day, total_amount, payment_method, creditcard_number, expiry_date, product_price, airport_tax, currency_unit, exchange_rate, itinerary_id, departure_flight_id, arrival_flight_id) VALUES ('2', '9', '2', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(5, 'いんどだお', '2018-08-02 00:00:00.000', 2,  7, 2, 2, 16);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(7, 'カレーめっちゃうまいで！', '2018-08-03 00:00:00.000', 4, 8, 2, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(8, '蛇を抱っこできるなど、貴重な体験できました', '2018-08-03 00:00:00.000', 4, '10', 2, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(9, 'サリーの一日レンタル少し高いな…', '2018-08-04 00:00:00.000', 4, 11, 2, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(10, 'いわずと知れた観光地', '2018-08-05 00:00:00.000', 2, 12, 3, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(11, 'とまと', '2018-08-04 00:00:00.000', 6, 7, 4, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(12, 'guhehehehe', '2018-08-03 00:00:00.000', 7, 8, 1, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(13, 'どこここ', '2018-08-05 00:00:00.000', 2, 9, 1, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(14, 'なにこれ', '2018-08-03 00:00:00.000', 6, 10, 3, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(15, 'つまんね', '2018-08-03 00:00:00.000', 4, 11, 2, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(16, '楽しい！！', '2018-08-04 00:00:00.000', 5, 12, 2, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(17, 'きれい', '2018-08-06 00:00:00.000', 8, 13, 4, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(18, 'いんど？', '2018-08-08 00:00:00.000', 7, 14, 5, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(19, 'きれい', '2018-08-03 00:00:00.000', 4, 15, 4, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(20, 'きれい', '2018-08-05 00:00:00.000', 4, 16, 2, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(21, 'きれい', '2018-08-06 00:00:00.000', 4, 17, 3, NUll, null);
+insert into comment_inf (comment_id, comment_content, comment_time, member_id, spot_id, grade, itinerary_id, product_id)
+values(22, 'きれい', '2018-08-03 00:00:00.000', 4, 18, 3, NUll, null);
+
+INSERT INTO favorite (favorite_id, itinerary_id, spot_id, product_id, member_id) VALUES ('1', '', '9', '', '1');
+INSERT INTO favorite (favorite_id, itinerary_id, spot_id, product_id, member_id) VALUES ('2', '', '11', '', '4');
+INSERT INTO favorite (favorite_id, itinerary_id, spot_id, product_id, member_id) VALUES ('3', '', '', '16', '3');
+
+INSERT INTO FLIGHT_INF 
+(FLIGHT_ID,ARRIVAL_TIME,DEPARTURE_TIME,DEPARTURE_CITY_ID,ARRIVAL_CITY_ID,DEPARTURE_CITY_NAME,ARRIVAL_CITY_NAME,AIRPORT_TAX,CURRENCY_UNIT)
+VALUES('1','2018-08-01 19:00:00.000','2018-08-01 9:00:00.000',1,3,'東京','デリー',1500,'ルピー');
+
+INSERT INTO FLIGHT_INF 
+(FLIGHT_ID,ARRIVAL_TIME,DEPARTURE_TIME,DEPARTURE_CITY_ID,ARRIVAL_CITY_ID,DEPARTURE_CITY_NAME,ARRIVAL_CITY_NAME,AIRPORT_TAX,CURRENCY_UNIT)
+VALUES('2','2018-08-01 22:30:00.000','2018-08-01 12:30:00.000',1,3,'東京','デリー',1500,'ルピー');
+
+INSERT INTO FLIGHT_INF 
+(FLIGHT_ID,ARRIVAL_TIME,DEPARTURE_TIME,DEPARTURE_CITY_ID,ARRIVAL_CITY_ID,DEPARTURE_CITY_NAME,ARRIVAL_CITY_NAME,AIRPORT_TAX,CURRENCY_UNIT)
+VALUES('3','2018-08-02 6:00:00.000','2018-08-01 20:00:00.000',1,3,'東京','デリー',1500,'ルピー');
+
+INSERT INTO FLIGHT_INF 
+(FLIGHT_ID,ARRIVAL_TIME,DEPARTURE_TIME,DEPARTURE_CITY_ID,ARRIVAL_CITY_ID,DEPARTURE_CITY_NAME,ARRIVAL_CITY_NAME,AIRPORT_TAX,CURRENCY_UNIT)
+VALUES('4','2018-08-04 18:00:00.000','2018-08-04 8:00:00.000',3,1,'デリー','東京',1500,'ルピー');
+
+INSERT INTO FLIGHT_INF 
+(FLIGHT_ID,ARRIVAL_TIME,DEPARTURE_TIME,DEPARTURE_CITY_ID,ARRIVAL_CITY_ID,DEPARTURE_CITY_NAME,ARRIVAL_CITY_NAME,AIRPORT_TAX,CURRENCY_UNIT)
+VALUES('5','2018-08-04 22:00:00.000','2018-08-04 12:00:00.000',3,1,'デリー','東京',1500,'ルピー');
+
+INSERT INTO FLIGHT_INF 
+(FLIGHT_ID,ARRIVAL_TIME,DEPARTURE_TIME,DEPARTURE_CITY_ID,ARRIVAL_CITY_ID,DEPARTURE_CITY_NAME,ARRIVAL_CITY_NAME,AIRPORT_TAX,CURRENCY_UNIT)
+VALUES('6','2018-08-04 8:30:00.000','2018-08-04 22:30:00.000',3,1,'デリー','東京',1500,'ルピー');
+
+
+
+commit;
+purge recyclebin;
